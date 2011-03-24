@@ -1,6 +1,9 @@
 #include<iostream>
 #include<fstream>
-#include <vector>
+#include<vector>
+#include<cctype>
+#include<string>
+
 
 #define DEBUG
 
@@ -174,26 +177,117 @@ void RCLetters(vector<string> &gpassword, vector<CorrPassword> &poa, int &cpassw
 void AddSpecialChar(vector<string> &gpassword, vector<CorrPassword> &poa, int &cpassword)
 {
     string str;
-	char asii;
 	char buffer[255];
 
     for (int i=0; i<gpassword.size(); i++)
     {
 		//getSpecChar
-		for (int j=(int) '!'; j<=15; j++)
+		for (int j=33; j<=47; j++)
 		{
 			str = gpassword[i];
 			sprintf(buffer, "%c", (char) j);
 			str.append(buffer);
-			cout << str << endl;			
+			MatchPassword(poa, str);
+			cpassword++;
+		}
+		//getSpecChar
+		for (int j=58; j<=64; j++)
+		{
+			str = gpassword[i];
+			sprintf(buffer, "%c", (char) j);
+			str.append(buffer);
+			MatchPassword(poa, str);
+			cpassword++;
+		}
+		//getSpecChar
+		for (int j=91; j<=96; j++)
+		{
+			str = gpassword[i];
+			sprintf(buffer, "%c", (char) j);
+			str.append(buffer);
+			MatchPassword(poa, str);
+			cpassword++;
+		}
+		//getSpecChar
+		for (int j=123; j<=126; j++)
+		{
+			str = gpassword[i];
+			sprintf(buffer, "%c", (char) j);
+			str.append(buffer);
+			MatchPassword(poa, str);
+			cpassword++;
 		}
 	}
 }
 
+void CTwoWords(vector<string> &gpassword, vector<CorrPassword> &poa, int &cpassword)
+{
+    string str;
+    string concatenation;
+
+    char buffer[255];
+
+    for (int i=0; i<gpassword.size(); i++)
+    {
+    	for (int j=i+1; j<gpassword.size(); j++)
+    	{
+			if (i == j) continue;
+
+			//Concatenating two words
+			//styple:1
+			str = gpassword[i];
+			concatenation = gpassword[j];
+			str.append(concatenation);
+			MatchPassword(poa, str);
+			//reverse
+			str = gpassword[i];
+			concatenation.append(str);
+			MatchPassword(poa, concatenation);
+
+			//styple:2
+			str = gpassword[i];
+			concatenation = gpassword[j];
+			str.append("_");
+			str.append(concatenation);
+			MatchPassword(poa, str);
+			//reverse
+			str = gpassword[i];
+			concatenation.append("_");
+			concatenation.append(str);
+			cout << concatenation << endl;
+			MatchPassword(poa, concatenation);
+
+			//styple:3
+			str = gpassword[i];
+			concatenation = gpassword[j];
+			str.append("&");
+			str.append(concatenation);
+			MatchPassword(poa, str);
+			//reverse
+			str = gpassword[i];
+			concatenation.append("&");
+			concatenation.append(str);
+			MatchPassword(poa, concatenation);
+
+			//styple:4
+			str = gpassword[i];
+			concatenation = gpassword[j];
+			str.append("#");
+			str.append(concatenation);
+			MatchPassword(poa, str);
+			//reverse
+			str = gpassword[i];
+			concatenation.append("#");
+			concatenation.append(str);
+			MatchPassword(poa, concatenation);
+		}
+
+	}
+}
 
 int main(int argc, char **argv)
 {
-    string str;
+    string str, astr;
 	vector<string> gpassword;
 	vector<CorrPassword> rpassword;
 	struct CorrPassword cp;
@@ -230,16 +324,18 @@ int main(int argc, char **argv)
 		//rule1: each word is considered as a potential password 
 		gpassword.push_back(str);
 		MatchPassword(rpassword, str);
+
+		//rule6
+		//lower
+		transform(str.begin(), str.end(), str.begin(), ::tolower);
+		MatchPassword(rpassword, str);
+		//upper
+		transform(str.begin(), str.end(), str.begin(), ::toupper);
+		MatchPassword(rpassword, str);
+
 		cpassword++;
     }    
 	wordfile.close();
-
-	/*
-	for (vector<string>::iterator it = gpassword.begin(); it!=gpassword.end(); ++it) 
-	{
-    	cout << *it << endl;
-	}	
-	*/
 
 	//generate guessed passwords, rule 2
 	//PermuteWord(gpassword, rpassword, cpassword);
@@ -248,8 +344,11 @@ int main(int argc, char **argv)
 	//RCLetters(gpassword, rpassword, cpassword);
 	
 	//generate guessed passwords, rule 4
-	AddSpecialChar(gpassword, rpassword, cpassword);
+	//AddSpecialChar(gpassword, rpassword, cpassword);
 	
+	//generate guessed passwords, rule 4
+	//CTwoWords(gpassword, rpassword, cpassword);
+
     return 0;
 
 }
