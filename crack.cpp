@@ -171,6 +171,25 @@ void RCLetters(vector<string> &gpassword, vector<CorrPassword> &poa, int &cpassw
 	}
 }
 
+void AddSpecialChar(vector<string> &gpassword, vector<CorrPassword> &poa, int &cpassword)
+{
+    string str;
+	char asii;
+	char buffer[255];
+
+    for (int i=0; i<gpassword.size(); i++)
+    {
+		//getSpecChar
+		for (int j=(int) '!'; j<=15; j++)
+		{
+			str = gpassword[i];
+			sprintf(buffer, "%c", (char) j);
+			str.append(buffer);
+			cout << str << endl;			
+		}
+	}
+}
+
 
 int main(int argc, char **argv)
 {
@@ -226,8 +245,10 @@ int main(int argc, char **argv)
 	//PermuteWord(gpassword, rpassword, cpassword);
 	
 	//generate guessed passwords, rule 3
-	RCLetters(gpassword, rpassword, cpassword);
+	//RCLetters(gpassword, rpassword, cpassword);
 	
+	//generate guessed passwords, rule 4
+	AddSpecialChar(gpassword, rpassword, cpassword);
 	
     return 0;
 
