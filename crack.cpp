@@ -3,9 +3,9 @@
 #include<vector>
 #include<cctype>
 #include<string>
+#include <algorithm>
 
-
-#define DEBUG
+//#define DEBUG
 
 using namespace std;
 
@@ -15,6 +15,21 @@ struct CorrPassword
 	bool match;
 };
 
+int CountCorrentPassword(vector<CorrPassword> &pos, vector<string> &copassword)
+{
+
+	for (int i=0; i<pos.size(); i++)
+    {
+        //count for all match
+        if (pos[i].match == true)
+        {
+			copassword.push_back(pos[i].cpassword);
+        }		
+	}
+
+	return copassword.size();
+
+}
 void MatchPassword(vector<CorrPassword> &pos, string str)
 {
 	int scan=0, poa=0;
@@ -285,6 +300,28 @@ void CTwoWords(vector<string> &gpassword, vector<CorrPassword> &poa, int &cpassw
 	}
 }
 
+void PrintInfo(vector<CorrPassword> &poa, int &cpassword)
+{
+	string str;
+	vector<string> correctpassword;
+
+	cout << "\n          PasswordCracker Information:" << endl;
+	cout << "----------------------------------------------------" << endl;
+	cout << "Total number of passwords constructed: " << cpassword << endl;
+	cout << "Total number of passwords guessed correctly:  " 
+ 	     << CountCorrentPassword(poa, correctpassword) << endl;
+
+	sort(correctpassword.begin(), correctpassword.end());
+
+	cout << "List of passwords guessed correctly:  " << endl;
+    for (int i=0; i<correctpassword.size(); i++)
+    {
+		cout << correctpassword[i] << endl;
+	}	
+
+	cout << "----------------------------------------------------" << endl;
+}
+
 int main(int argc, char **argv)
 {
     string str, astr;
@@ -317,6 +354,7 @@ int main(int argc, char **argv)
 		cp.match = false;
 		rpassword.push_back(cp);
     }
+	pfile.close();
 
     while (!wordfile.eof())
     {
@@ -333,21 +371,23 @@ int main(int argc, char **argv)
 		transform(str.begin(), str.end(), str.begin(), ::toupper);
 		MatchPassword(rpassword, str);
 
-		cpassword++;
+		cpassword = cpassword + 3;
     }    
 	wordfile.close();
 
 	//generate guessed passwords, rule 2
-	//PermuteWord(gpassword, rpassword, cpassword);
+	PermuteWord(gpassword, rpassword, cpassword);
 	
 	//generate guessed passwords, rule 3
-	//RCLetters(gpassword, rpassword, cpassword);
+	RCLetters(gpassword, rpassword, cpassword);
 	
 	//generate guessed passwords, rule 4
-	//AddSpecialChar(gpassword, rpassword, cpassword);
+	AddSpecialChar(gpassword, rpassword, cpassword);
 	
 	//generate guessed passwords, rule 4
-	//CTwoWords(gpassword, rpassword, cpassword);
+	CTwoWords(gpassword, rpassword, cpassword);
+	
+	PrintInfo(rpassword, cpassword);
 
     return 0;
 
