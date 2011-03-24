@@ -2,7 +2,7 @@
 #include<fstream>
 #include <vector>
 
-//#define DEBUG
+#define DEBUG
 
 using namespace std;
 
@@ -53,15 +53,10 @@ void PermuteWord(vector<string> &gpassword, vector<CorrPassword> &pos, int &cpas
 	string str;
 	string astr;
 
-	int org_size = gpassword.size();
 	char buffer[255];
 
-#ifdef DEBUG
-	cout << "org size: " << org_size  << endl;
-#endif
-
 	//0-9
-	for (int i=0; i<org_size; i++) 
+	for (int i=0; i<gpassword.size(); i++) 
 	{
 		for (int j=0; j<=999; j++)
 		{
@@ -124,12 +119,58 @@ void PermuteWord(vector<string> &gpassword, vector<CorrPassword> &pos, int &cpas
 			}
 		}
 	}
-
-#ifdef DEBUG
-	cout << "org size: " << gpassword.size()  << endl;
-#endif
-
 }
+
+void RCLetters(vector<string> &gpassword, vector<CorrPassword> &poa, int &cpassword)
+{
+    string str;
+
+    for (int i=0; i<gpassword.size(); i++)
+    {
+		//replace: l -> 1
+		str = gpassword[i];
+    	string::size_type pos = 0;
+    	while ( (pos = str.find('l', pos)) != string::npos ) 
+		{
+        	str.replace( pos, 1, "1");
+			MatchPassword(poa, str);
+        	pos++;
+    	}
+
+		//replace: o -> 0
+		str = gpassword[i];
+    	pos = 0;
+    	while ( (pos = str.find('o', pos)) != string::npos ) 
+		{
+        	str.replace( pos, 1, "0");
+			MatchPassword(poa, str);
+        	pos++;
+    	}
+		
+		//replace: s -> 5
+		str = gpassword[i];
+    	pos = 0;
+    	while ( (pos = str.find('s', pos)) != string::npos ) 
+		{
+        	str.replace( pos, 1, "5");
+			MatchPassword(poa, str);
+        	pos++;
+    	}
+
+		//replace: s -> $
+		str = gpassword[i];
+    	pos = 0;
+    	while ( (pos = str.find('s', pos)) != string::npos ) 
+		{
+        	str.replace( pos, 1, "$");
+			MatchPassword(poa, str);
+        	pos++;
+    	}
+
+		cpassword+=4;		
+	}
+}
+
 
 int main(int argc, char **argv)
 {
@@ -182,8 +223,10 @@ int main(int argc, char **argv)
 	*/
 
 	//generate guessed passwords, rule 2
-	//permute the words with 1,2,and 3 digits
-	PermuteWord(gpassword, rpassword, cpassword);
+	//PermuteWord(gpassword, rpassword, cpassword);
+	
+	//generate guessed passwords, rule 3
+	RCLetters(gpassword, rpassword, cpassword);
 	
 	
     return 0;
