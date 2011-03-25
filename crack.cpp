@@ -9,6 +9,10 @@
 
 using namespace std;
 
+int cpassword = 0;
+int rule_number[6] = {0};
+int corrent_number[6] = {0};
+
 struct CorrPassword
 {
 	string cpassword;
@@ -30,7 +34,7 @@ int CountCorrentPassword(vector<CorrPassword> &pos, vector<string> &copassword)
 	return copassword.size();
 
 }
-void MatchPassword(vector<CorrPassword> &pos, string str)
+void MatchPassword(vector<CorrPassword> &pos, string str, int rule)
 {
 	int scan=0, poa=0;
 
@@ -43,6 +47,7 @@ void MatchPassword(vector<CorrPassword> &pos, string str)
 			cout << pos[i].cpassword << " match to " << str << endl;
 		#endif
 			pos[i].match = true;
+			corrent_number[rule]++;
 			poa=1;
 		}
 		else
@@ -87,23 +92,23 @@ void PermuteWord(vector<string> &gpassword, vector<CorrPassword> &pos, int &cpas
 				sprintf(buffer, "%d", j);
 				str.append(buffer);
 				astr.insert(0, buffer);
-				MatchPassword(pos, str);				
-				MatchPassword(pos, astr);				
+				MatchPassword(pos, str, 1);
+				MatchPassword(pos, astr, 1);				
 				//00-09
             	str = gpassword[i];
 				astr = gpassword[i];
 				sprintf(buffer, "0%d", j);
 				str.append(buffer);
-				MatchPassword(pos, str);
-				MatchPassword(pos, astr);
+				MatchPassword(pos, str, 1);
+				MatchPassword(pos, astr, 1);
 				//00-09
             	str = gpassword[i];
 				astr = gpassword[i];
 				sprintf(buffer, "00%d", j);
 				str.append(buffer);
-				MatchPassword(pos, str);
-				MatchPassword(pos, astr);
-
+				MatchPassword(pos, str, 1);
+				MatchPassword(pos, astr, 1);
+				rule_number[1]+=6;
 				cpassword+=6;
 			}
 			else if (j<100)
@@ -113,15 +118,16 @@ void PermuteWord(vector<string> &gpassword, vector<CorrPassword> &pos, int &cpas
 				astr = gpassword[i];
 				sprintf(buffer, "%d", j);
 				str.append(buffer);
-				MatchPassword(pos, str);
-				MatchPassword(pos, astr);
+				MatchPassword(pos, str, 1);
+				MatchPassword(pos, astr, 1);
 				//010-099
             	str = gpassword[i];
 				astr = gpassword[i];
 				sprintf(buffer, "0%d", j);
 				str.append(buffer);
-				MatchPassword(pos, str);
-				MatchPassword(pos, astr);
+				MatchPassword(pos, str, 1);
+				MatchPassword(pos, astr, 1);
+				rule_number[1]+=4;
 				cpassword+=4;
 			}
 			else
@@ -131,8 +137,9 @@ void PermuteWord(vector<string> &gpassword, vector<CorrPassword> &pos, int &cpas
 				astr = gpassword[i];
 				sprintf(buffer, "%d", j);
 				str.append(buffer);
-				MatchPassword(pos, str);
-				MatchPassword(pos, astr);
+				MatchPassword(pos, str, 1);
+				MatchPassword(pos, astr, 1);
+				rule_number[1]+=2;
 				cpassword+=2;
 			}
 		}
@@ -151,7 +158,7 @@ void RCLetters(vector<string> &gpassword, vector<CorrPassword> &poa, int &cpassw
     	while ( (pos = str.find('l', pos)) != string::npos ) 
 		{
         	str.replace( pos, 1, "1");
-			MatchPassword(poa, str);
+			MatchPassword(poa, str, 2);
         	pos++;
     	}
 
@@ -161,7 +168,7 @@ void RCLetters(vector<string> &gpassword, vector<CorrPassword> &poa, int &cpassw
     	while ( (pos = str.find('o', pos)) != string::npos ) 
 		{
         	str.replace( pos, 1, "0");
-			MatchPassword(poa, str);
+			MatchPassword(poa, str, 2);
         	pos++;
     	}
 		
@@ -171,7 +178,7 @@ void RCLetters(vector<string> &gpassword, vector<CorrPassword> &poa, int &cpassw
     	while ( (pos = str.find('s', pos)) != string::npos ) 
 		{
         	str.replace( pos, 1, "5");
-			MatchPassword(poa, str);
+			MatchPassword(poa, str, 2);
         	pos++;
     	}
 
@@ -181,10 +188,10 @@ void RCLetters(vector<string> &gpassword, vector<CorrPassword> &poa, int &cpassw
     	while ( (pos = str.find('s', pos)) != string::npos ) 
 		{
         	str.replace( pos, 1, "$");
-			MatchPassword(poa, str);
+			MatchPassword(poa, str, 2);
         	pos++;
     	}
-
+		rule_number[2]+=4;
 		cpassword+=4;		
 	}
 }
@@ -202,7 +209,8 @@ void AddSpecialChar(vector<string> &gpassword, vector<CorrPassword> &poa, int &c
 			str = gpassword[i];
 			sprintf(buffer, "%c", (char) j);
 			str.append(buffer);
-			MatchPassword(poa, str);
+			MatchPassword(poa, str, 3);
+			rule_number[3]++;
 			cpassword++;
 		}
 		//getSpecChar
@@ -211,7 +219,8 @@ void AddSpecialChar(vector<string> &gpassword, vector<CorrPassword> &poa, int &c
 			str = gpassword[i];
 			sprintf(buffer, "%c", (char) j);
 			str.append(buffer);
-			MatchPassword(poa, str);
+			MatchPassword(poa, str, 3);
+			rule_number[3]++;
 			cpassword++;
 		}
 		//getSpecChar
@@ -220,7 +229,8 @@ void AddSpecialChar(vector<string> &gpassword, vector<CorrPassword> &poa, int &c
 			str = gpassword[i];
 			sprintf(buffer, "%c", (char) j);
 			str.append(buffer);
-			MatchPassword(poa, str);
+			MatchPassword(poa, str, 3);
+			rule_number[3]++;
 			cpassword++;
 		}
 		//getSpecChar
@@ -229,13 +239,14 @@ void AddSpecialChar(vector<string> &gpassword, vector<CorrPassword> &poa, int &c
 			str = gpassword[i];
 			sprintf(buffer, "%c", (char) j);
 			str.append(buffer);
-			MatchPassword(poa, str);
+			MatchPassword(poa, str, 3);
+			rule_number[3]++;
 			cpassword++;
 		}
 	}
 }
 
-void CTwoWords(vector<string> &gpassword, vector<CorrPassword> &poa, int &cpassword)
+int CTwoWords(vector<string> &gpassword, vector<CorrPassword> &poa, int &cpassword)
 {
     string str;
     string concatenation;
@@ -253,51 +264,57 @@ void CTwoWords(vector<string> &gpassword, vector<CorrPassword> &poa, int &cpassw
 			str = gpassword[i];
 			concatenation = gpassword[j];
 			str.append(concatenation);
-			MatchPassword(poa, str);
+			MatchPassword(poa, str, 4);
 			//reverse
 			str = gpassword[i];
 			concatenation.append(str);
-			MatchPassword(poa, concatenation);
+			MatchPassword(poa, concatenation, 4);
 
 			//styple:2
 			str = gpassword[i];
 			concatenation = gpassword[j];
 			str.append("_");
 			str.append(concatenation);
-			MatchPassword(poa, str);
+			MatchPassword(poa, str, 4);
 			//reverse
 			str = gpassword[i];
 			concatenation.append("_");
 			concatenation.append(str);
 			cout << concatenation << endl;
-			MatchPassword(poa, concatenation);
+			MatchPassword(poa, concatenation, 4);
 
 			//styple:3
 			str = gpassword[i];
 			concatenation = gpassword[j];
 			str.append("&");
 			str.append(concatenation);
-			MatchPassword(poa, str);
+			MatchPassword(poa, str, 4);
 			//reverse
 			str = gpassword[i];
 			concatenation.append("&");
 			concatenation.append(str);
-			MatchPassword(poa, concatenation);
+			MatchPassword(poa, concatenation, 4);
 
 			//styple:4
 			str = gpassword[i];
 			concatenation = gpassword[j];
 			str.append("#");
 			str.append(concatenation);
-			MatchPassword(poa, str);
+			MatchPassword(poa, str, 4);
 			//reverse
 			str = gpassword[i];
 			concatenation.append("#");
 			concatenation.append(str);
-			MatchPassword(poa, concatenation);
+			MatchPassword(poa, concatenation, 4);
+
+			rule_number[4]+=8;
+			cpassword+=8;
 		}
 
+		if (rule_number[4] >= 200000000) return 1;
 	}
+
+	return 0;
 }
 
 void PrintInfo(vector<CorrPassword> &poa, int &cpassword)
@@ -322,6 +339,14 @@ void PrintInfo(vector<CorrPassword> &poa, int &cpassword)
 	cout << "----------------------------------------------------" << endl;
 }
 
+void PrintEchoRuleInfo(int rule)
+{
+    cout << "\nCreating passwords using rule " << rule+1 << "..." << endl;
+    cout << rule_number[rule] << " passwords created; "
+		 << corrent_number[rule] << " passwords matched"
+		 << endl;
+}
+
 int main(int argc, char **argv)
 {
     string str, astr;
@@ -329,7 +354,7 @@ int main(int argc, char **argv)
 	vector<CorrPassword> rpassword;
 	struct CorrPassword cp;
 
-	int cpassword = 0;
+	int rep = 0;
 
 	if (argc != 3)
     {
@@ -361,32 +386,51 @@ int main(int argc, char **argv)
         wordfile >> str;
 		//rule1: each word is considered as a potential password 
 		gpassword.push_back(str);
-		MatchPassword(rpassword, str);
+		MatchPassword(rpassword, str, 0);
+		rule_number[0]++;
 
 		//rule6
 		//lower
 		transform(str.begin(), str.end(), str.begin(), ::tolower);
-		MatchPassword(rpassword, str);
+		MatchPassword(rpassword, str, 5);
 		//upper
 		transform(str.begin(), str.end(), str.begin(), ::toupper);
-		MatchPassword(rpassword, str);
+		MatchPassword(rpassword, str, 5);
 
+		rule_number[5]+=2;
 		cpassword = cpassword + 3;
     }    
 	wordfile.close();
 
+	PrintEchoRuleInfo(0);
+
 	//generate guessed passwords, rule 2
 	PermuteWord(gpassword, rpassword, cpassword);
+	PrintEchoRuleInfo(1);
 	
 	//generate guessed passwords, rule 3
 	RCLetters(gpassword, rpassword, cpassword);
+	PrintEchoRuleInfo(2);
 	
 	//generate guessed passwords, rule 4
 	AddSpecialChar(gpassword, rpassword, cpassword);
+	PrintEchoRuleInfo(3);
 	
 	//generate guessed passwords, rule 4
-	CTwoWords(gpassword, rpassword, cpassword);
+	rep = CTwoWords(gpassword, rpassword, cpassword);
+
+	if (rep == 1)
+	{
+		cout << "rule5: "
+			 <<  "created 200,000,000 passwords for rule 5..."
+			 << endl;
+
+	}
 	
+	PrintEchoRuleInfo(4);
+
+	PrintEchoRuleInfo(5);
+
 	PrintInfo(rpassword, cpassword);
 
     return 0;
