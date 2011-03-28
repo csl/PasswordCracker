@@ -13,6 +13,7 @@ int cpassword = 0;
 int rule_number[6] = {0};
 int corrent_number[6] = {0};
 
+//struct for password correctly
 struct CorrPassword
 {
 	string cpassword;
@@ -22,9 +23,10 @@ struct CorrPassword
 int CountCorrentPassword(vector<CorrPassword> &pos, vector<string> &copassword)
 {
 
+	//couting for password corrently 
 	for (int i=0; i<pos.size(); i++)
     {
-        //count for all match
+        //Count for all match
         if (pos[i].match == true)
         {
 			copassword.push_back(pos[i].cpassword);
@@ -38,6 +40,7 @@ void MatchPassword(vector<CorrPassword> &pos, string str, int rule)
 {
 	int scan=0, poa=0;
 
+	//to match guessed password for read password
     for (int i=0; i<pos.size(); i++)
     {
 		//not match
@@ -322,6 +325,7 @@ void PrintInfo(vector<CorrPassword> &poa, int &cpassword)
 	string str;
 	vector<string> correctpassword;
 
+	//printf information message
 	cout << "\n          PasswordCracker Information:" << endl;
 	cout << "----------------------------------------------------" << endl;
 	cout << "Total number of passwords constructed: " << cpassword << endl;
@@ -341,6 +345,7 @@ void PrintInfo(vector<CorrPassword> &poa, int &cpassword)
 
 void PrintEchoRuleInfo(int rule)
 {
+	//print echo rules for information
     cout << "\nCreating passwords using rule " << rule+1 << "..." << endl;
     cout << rule_number[rule] << " passwords created; "
 		 << corrent_number[rule] << " passwords matched"
@@ -356,6 +361,7 @@ int main(int argc, char **argv)
 
 	int rep = 0;
 
+	//argc must equal 3
 	if (argc != 3)
     {
         cout << "format: crack.x word_file password_file" << endl;
@@ -372,6 +378,7 @@ int main(int argc, char **argv)
         return 0;
     }
 
+	//loading password file
     while (!pfile.eof())
     {
 		pfile >> str;
@@ -381,6 +388,7 @@ int main(int argc, char **argv)
     }
 	pfile.close();
 
+	//loading word file
     while (!wordfile.eof())
     {
         wordfile >> str;
@@ -416,7 +424,7 @@ int main(int argc, char **argv)
 	AddSpecialChar(gpassword, rpassword, cpassword);
 	PrintEchoRuleInfo(3);
 	
-	//generate guessed passwords, rule 4
+	//generate guessed passwords, rule 5
 	rep = CTwoWords(gpassword, rpassword, cpassword);
 
 	if (rep == 1)
@@ -427,8 +435,10 @@ int main(int argc, char **argv)
 
 	}
 	
+	//print message for rule 5
 	PrintEchoRuleInfo(4);
 
+	//print message for rule 6
 	PrintEchoRuleInfo(5);
 
 	PrintInfo(rpassword, cpassword);

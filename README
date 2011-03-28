@@ -1,0 +1,51 @@
+This is the README file for PasswrodCracker, a package which implements generating guessed passwords program
+
+Introduction
+============
+
+PasswordCracker is a crack pawssword which using directory method.
+
+Installation
+============
+
+1) Compiling for crack.cpp
+
+$ make
+
+2) Execute
+
+$ ./crack.x word_file password_file
+
+where crack.x is the program name.
+
+The first parameter word_file is the name of the dictionary file, which contains all the words from which the crack.x program will generate guessed passwords.
+
+The second parameter password_file is the name of a password file, which contains passwords that we would like to break.
+
+The format of the word_file and password_file is the same: each line contains a single word or password, respectively.
+
+The objective of the crack.x program is to generate guessed passwords using the word_file to match as many as possible the passwords given in the password_file.
+
+New Rules
+============
+
+We create other rules for generating guessed password.
+
+Some example rules are given below:
+
+1) uppercase word can be replace by lowercase word
+
+for example, if ¡§APPLE¡¨ is a word in the word_file, you can add apple
+
+2) lowercase word can be replace by uppercase word
+
+for example, the word ¡§mybigoh¡¨ can be replaced by number ¡§MYBIGOH"
+
+Note
+============
+
+Given that the program can take a long time to complete depending on the number of rules, 
+
+so you can use "CTRL + C" to terminate program if it has been running for too long.
+
+This program will terminate if your program has correctly guessed all passwords in the password_file.
