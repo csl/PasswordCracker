@@ -4,7 +4,9 @@
 #include<cctype>
 #include<string>
 #include <algorithm>
-
+#include <cstdio>
+#include<ext/stdio_filebuf.h>
+#include<sstream>
 //#define DEBUG
 
 using namespace std;
@@ -12,6 +14,7 @@ using namespace std;
 int cpassword = 0;
 int rule_number[6] = {0};
 int corrent_number[6] = {0};
+int AddCount = 0;
 
 //struct for password correctly
 struct CorrPassword
@@ -283,7 +286,6 @@ int CTwoWords(vector<string> &gpassword, vector<CorrPassword> &poa, int &cpasswo
 			str = gpassword[i];
 			concatenation.append("_");
 			concatenation.append(str);
-			cout << concatenation << endl;
 			MatchPassword(poa, concatenation, 4);
 
 			//styple:3
@@ -345,10 +347,11 @@ void PrintInfo(vector<CorrPassword> &poa, int &cpassword)
 
 void PrintEchoRuleInfo(int rule)
 {
+	AddCount = AddCount + corrent_number[rule];
 	//print echo rules for information
     cout << "\nCreating passwords using rule " << rule+1 << "..." << endl;
     cout << rule_number[rule] << " passwords created; "
-		 << corrent_number[rule] << " passwords matched"
+		 << AddCount << " passwords matched"
 		 << endl;
 }
 
@@ -358,7 +361,8 @@ int main(int argc, char **argv)
 	vector<string> gpassword;
 	vector<CorrPassword> rpassword;
 	struct CorrPassword cp;
-
+    char tmp[80]="";
+    stringstream ssconvert;
 	int rep = 0;
 
 	//argc must equal 3
@@ -369,29 +373,33 @@ int main(int argc, char **argv)
     }
 
 	//reading word_file txt
-    ifstream wordfile(argv[1]);
-    ifstream pfile(argv[2]);
+    FILE *wordfile = fopen64(argv[1], "r");
+    FILE *pfile = fopen64(argv[2], "r");
 
-    if (wordfile.peek() == EOF || pfile.peek() == EOF)
+    if (wordfile == NULL || pfile == NULL)
     {
         cout << "file is empty."<<endl;
         return 0;
     }
 
 	//loading password file
-    while (!pfile.eof())
+    while (fgets( tmp, 80, pfile)!=NULL)
     {
-		pfile >> str;
+		//getline(pfile, str);
+                 ssconvert << tmp;
+        	ssconvert >> str;
 		cp.cpassword = str;
 		cp.match = false;
 		rpassword.push_back(cp);
     }
-	pfile.close();
+	fclose(pfile);
 
 	//loading word file
-    while (!wordfile.eof())
+    while (fgets( tmp, 80, wordfile)!=NULL)
     {
-        wordfile >> str;
+                        ssconvert << tmp;
+        ssconvert >> str;
+ 
 		//rule1: each word is considered as a potential password 
 		gpassword.push_back(str);
 		MatchPassword(rpassword, str, 0);
@@ -408,7 +416,7 @@ int main(int argc, char **argv)
 		rule_number[5]+=2;
 		cpassword = cpassword + 3;
     }    
-	wordfile.close();
+	fclose(wordfile);
 
 	PrintEchoRuleInfo(0);
 
@@ -429,7 +437,7 @@ int main(int argc, char **argv)
 
 	if (rep == 1)
 	{
-		cout << "rule5: "
+		cout << "rule 5 exit,\n"
 			 <<  "created 200,000,000 passwords for rule 5..."
 			 << endl;
 
