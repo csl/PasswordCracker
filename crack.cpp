@@ -1,9 +1,10 @@
 #include<iostream>
 #include<fstream>
 #include<vector>
+#include<set>
 #include<cctype>
 #include<string>
-#include <algorithm>
+#include<algorithm>
 #include <cstdio>
 #include<ext/stdio_filebuf.h>
 #include<sstream>
@@ -16,68 +17,30 @@ int rule_number[6] = {0};
 int corrent_number[6] = {0};
 int AddCount = 0;
 
-//struct for password correctly
-struct CorrPassword
-{
-	string cpassword;
-	bool match;
-};
+vector<string> correctly_password;
 
-int CountCorrentPassword(vector<CorrPassword> &pos, vector<string> &copassword)
-{
-
-	//couting for password corrently 
-	for (int i=0; i<pos.size(); i++)
-    {
-        //Count for all match
-        if (pos[i].match == true)
-        {
-			copassword.push_back(pos[i].cpassword);
-        }		
-	}
-
-	return copassword.size();
-
-}
-void MatchPassword(vector<CorrPassword> &pos, string str, int rule)
+void MatchPassword(set<string> &pos, string str, int rule)
 {
 	int scan=0, poa=0;
 
 	//to match guessed password for read password
-    for (int i=0; i<pos.size(); i++)
-    {
-		//not match
-		if (pos[i].match == false && pos[i].cpassword.compare(str) == 0) 
-		{
-		#ifdef DEBUG
-			cout << pos[i].cpassword << " match to " << str << endl;
-		#endif
-			pos[i].match = true;
-			corrent_number[rule]++;
-			poa=1;
-		}
-		else
-		{
-			continue;
-		}
+	set <string>::iterator sop = pos.find(str);
 
-		//count for all match
-		if (pos[i].match == true)
-		{
-			scan++;
-			if (poa==1) break;
-		}
+	if (sop != pos.end())
+	{
+		corrent_number[rule]++;
+		correctly_password.push_back(str);
+		pos.erase(str);
 	}
 
-	if (pos.size() == scan)
+	if (pos.size() == 0)
 	{
 		cout << "all password match." << endl;
 		exit(1);
 	}
-	
 }
 
-void PermuteWord(vector<string> &gpassword, vector<CorrPassword> &pos, int &cpassword)
+void PermuteWord(vector<string> &gpassword, set<string> &pos, int &cpassword)
 {
 	string str;
 	string astr;
@@ -152,7 +115,7 @@ void PermuteWord(vector<string> &gpassword, vector<CorrPassword> &pos, int &cpas
 	}
 }
 
-void RCLetters(vector<string> &gpassword, vector<CorrPassword> &poa, int &cpassword)
+void RCLetters(vector<string> &gpassword, set<string> &poa, int &cpassword)
 {
     string str;
 
@@ -202,7 +165,7 @@ void RCLetters(vector<string> &gpassword, vector<CorrPassword> &poa, int &cpassw
 	}
 }
 
-void AddSpecialChar(vector<string> &gpassword, vector<CorrPassword> &poa, int &cpassword)
+void AddSpecialChar(vector<string> &gpassword, set<string> &poa, int &cpassword)
 {
     string str;
 	char buffer[255];
@@ -252,7 +215,7 @@ void AddSpecialChar(vector<string> &gpassword, vector<CorrPassword> &poa, int &c
 	}
 }
 
-int CTwoWords(vector<string> &gpassword, vector<CorrPassword> &poa, int &cpassword)
+int CTwoWords(vector<string> &gpassword, set<string> &poa, int &cpassword)
 {
     string str;
     string concatenation;
@@ -322,24 +285,22 @@ int CTwoWords(vector<string> &gpassword, vector<CorrPassword> &poa, int &cpasswo
 	return 0;
 }
 
-void PrintInfo(vector<CorrPassword> &poa, int &cpassword)
+void PrintInfo(set<string> &poa, int &cpassword)
 {
 	string str;
-	vector<string> correctpassword;
-
 	//printf information message
 	cout << "\n          PasswordCracker Information:" << endl;
 	cout << "----------------------------------------------------" << endl;
 	cout << "Total number of passwords constructed: " << cpassword << endl;
 	cout << "Total number of passwords guessed correctly:  " 
- 	     << CountCorrentPassword(poa, correctpassword) << endl;
+ 	     << correctly_password.size() << endl;
 
-	sort(correctpassword.begin(), correctpassword.end());
+	sort(correctly_password.begin(), correctly_password.end());
 
 	cout << "List of passwords guessed correctly:  " << endl;
-    for (int i=0; i<correctpassword.size(); i++)
+    for (int i=0; i<correctly_password.size(); i++)
     {
-		cout << correctpassword[i] << endl;
+		cout << correctly_password[i] << endl;
 	}	
 
 	cout << "----------------------------------------------------" << endl;
@@ -359,8 +320,7 @@ int main(int argc, char **argv)
 {
     string str, astr;
 	vector<string> gpassword;
-	vector<CorrPassword> rpassword;
-	struct CorrPassword cp;
+	set<string> rpassword;
     char tmp[80]="";
     stringstream ssconvert;
 	int rep = 0;
@@ -386,18 +346,17 @@ int main(int argc, char **argv)
     while (fgets( tmp, 80, pfile)!=NULL)
     {
 		//getline(pfile, str);
-                 ssconvert << tmp;
-        	ssconvert >> str;
-		cp.cpassword = str;
-		cp.match = false;
-		rpassword.push_back(cp);
+        ssconvert << tmp;
+        ssconvert >> str;
+
+		rpassword.insert(str);
     }
 	fclose(pfile);
 
 	//loading word file
     while (fgets( tmp, 80, wordfile)!=NULL)
     {
-                        ssconvert << tmp;
+        ssconvert << tmp;
         ssconvert >> str;
  
 		//rule1: each word is considered as a potential password 
@@ -409,6 +368,7 @@ int main(int argc, char **argv)
 		//lower
 		transform(str.begin(), str.end(), str.begin(), ::tolower);
 		MatchPassword(rpassword, str, 5);
+
 		//upper
 		transform(str.begin(), str.end(), str.begin(), ::toupper);
 		MatchPassword(rpassword, str, 5);
